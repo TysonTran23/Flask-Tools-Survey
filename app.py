@@ -30,5 +30,11 @@ def answer():
     responses.append(answer)
     next_question = len(responses)
 
+    if len(responses) == len(satisfaction_survey.questions):
+        return redirect('/thank-you')
     return redirect(f'/questions/{next_question}')
+
+@app.route('/thank-you')
+def thank_you():
+    return render_template('thankyou.html')
 
