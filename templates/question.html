@@ -3,6 +3,16 @@
 
 {%block content%}
 <h1>Question {{question_number}}</h1>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="flash-messages">
+    {% for message in messages %}
+    <li>{{message}}</li>
+    {% endfor %}
+
+</ul>
+{% endif %}
+{% endwith %}
 <form action="/answer" method="post">
     <p>{{question}}</p>
     {% for answer in answers %}
