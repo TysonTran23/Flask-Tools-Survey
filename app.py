@@ -1,5 +1,5 @@
 from surveys import satisfaction_survey
-from flask import Flask, request, render_template, redirect, flash
+from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
@@ -18,12 +18,19 @@ def survey():
 
     return render_template('survey.html', title=title, instructions=instructions)
 
+@app.route('/begin', methods=["POST"])
+def begin():
+    session['responses'] = []
+    return redirect('/questions/0')
+
 @app.route('/questions/<int:question_number>')
 def question(question_number):
     """Shows the question and choices on the pages"""
     question = satisfaction_survey.questions[question_number].question
     answers = satisfaction_survey.questions[question_number].choices
     total_questions = satisfaction_survey.questions
+
+    responses = session.get('responses')
 
     #Checks if all questions are answered
     if len(responses) == len(total_questions):
@@ -41,8 +48,15 @@ def question(question_number):
 @app.route('/answer', methods=["POST"])
 def answer():
     """Appends the answer from the form and redirects to the next question"""
+    #Get response
     answer = request.form.get('answer')
+
+    #Add the response to the session
+    responses = session['responses']
     responses.append(answer)
+    session['responses'] = responses
+
+
     next_question = len(responses)
 
     """When the user finishes answering all the questions, show a thank you page"""
